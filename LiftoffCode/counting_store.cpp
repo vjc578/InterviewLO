@@ -20,15 +20,20 @@
 #include <string>
 #include <cassert>
 
+void CountingStore::UpdateCountMap(std::map<int, int>& count_map_value, int val) {
+    auto lower_bound_value = count_map_value.lower_bound(current_level_);
+    if (lower_bound_value == count_map_value.end()) {
+        count_map_value.emplace(current_level_, 
+                                std::prev(count_map_value.end())->second + val);
+    } else if (lower_bound_value->first == current_level_) {
+        lower_bound_value->second += val;
+    }
+}
+
 void CountingStore::DecrementCountMap(int val) {
     auto count_map_value = count_map_.find(val);
     assert (count_map_value != count_map_.end());
-    auto lower_bound_value = count_map_value->second.lower_bound(current_level_);
-    if (lower_bound_value == count_map_value->second.end()) {
-        count_map_value->second.emplace(current_level_, std::prev(count_map_value->second.end())->second - 1);
-    } else if (lower_bound_value->first == current_level_) {
-        lower_bound_value->second--;
-    }
+    UpdateCountMap(count_map_value->second, -1);
 }
 
 void CountingStore::IncrementCountMap(int val) {
@@ -37,12 +42,7 @@ void CountingStore::IncrementCountMap(int val) {
         count_map_[val][current_level_] = 1;
         return;
     }
-    auto lower_bound_value = count_map_value->second.lower_bound(current_level_);
-    if (lower_bound_value == count_map_value->second.end()) {
-        count_map_value->second.emplace(current_level_, std::prev(count_map_value->second.end())->second + 1);
-    } else if (lower_bound_value->first == current_level_) {
-        lower_bound_value->second++;
-    }
+    UpdateCountMap(count_map_value->second, 1);
 }
 
 void CountingStore::Write(const std::string& name, int val) {

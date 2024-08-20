@@ -57,8 +57,6 @@ void TestCountingStore() {
 }
 
 int main(int argc, const char * argv[]) {
-    // insert code here...
-    ///std::cout << "Hello, World!\n";
     TestCountingStore();
     CountingStore store;
     for (std::string line; std::getline(std::cin, line);) {
@@ -70,24 +68,50 @@ int main(int argc, const char * argv[]) {
         } else if (command == "COMMIT") {
             store.Checkpoint();
         } else if (command == "WRITE") {
-            std::string write_string;
-            line_stream >> write_string;
-            int write_val;
-            line_stream >> write_val;
-            store.Write(write_string, write_val);
-        } else if (command == "READ") {
-            int val;
-            std::string read_string;
-            line_stream >> read_string;
-            if (store.Read(read_string, &val)) {
-                std::cout << val << std::endl;
+            if (line_stream.eof()) {
+                std::cerr << "Missing write variable name" << std::endl;
             } else {
-                std::cout << "Not found" << std::endl;
+                std::string write_string;
+                line_stream >> write_string;
+                if (line_stream.eof()) {
+                    std::cerr << "Missing write variable value" << std::endl;
+                } else {
+                    int write_val;
+                    line_stream >> write_val;
+                    if (line_stream.fail()) {
+                        std::cerr << "Integer value not valid" << std::endl;
+                    } else {
+                        store.Write(write_string, write_val);
+                    }
+                }
+            }
+        } else if (command == "READ") {
+            if (line_stream.eof()) {
+                std::cerr << "Missing read variable name" << std::endl;
+            } else {
+                int val;
+                std::string read_string;
+                line_stream >> read_string;
+                if (store.Read(read_string, &val)) {
+                    std::cout << val << std::endl;
+                } else {
+                    std::cout << "Not found" << std::endl;
+                }
             }
         } else if (command == "COUNTVAL") {
-            int count_val;
-            line_stream >> count_val;
-            std::cout << store.CountVal(count_val) << std::endl;
+            if (line_stream.eof()) {
+                std::cerr << "Missing count variable name" << std::endl;
+            } else {
+                int count_val;
+                line_stream >> count_val;
+                if (line_stream.fail()) {
+                    std::cerr << "Integer value not valid" << std::endl;
+                } else {
+                    std::cout << store.CountVal(count_val) << std::endl;
+                }
+            }
+        } else {
+            std::cerr << "Command not recognized" << std::endl;
         }
     }
     return 0;

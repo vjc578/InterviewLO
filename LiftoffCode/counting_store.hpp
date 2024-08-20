@@ -36,6 +36,7 @@ private:
     
     void DecrementCountMap(int val);
     void IncrementCountMap(int val);
+    void UpdateCountMap(std::map<int,int>& count_map_value, int val);
     
     std::unordered_map<std::string, std::map<int, int>> value_map_;
     std::unordered_map<int, std::map<int,int>> count_map_;
