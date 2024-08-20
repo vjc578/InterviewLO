@@ -12,6 +12,7 @@
 #include <set>
 #include <unordered_set>
 
+
 std::vector<int> getConnections(int id) {
     static std::vector<std::vector<int>> result{{1,3}, {0,2,3,4,5}, {2, 1}, {0, 1, 5}, {1,5,6}, {1, 3, 4, 6}, {4, 5}, {}};
     if (id < 0 || id >= result.size()) {
@@ -100,8 +101,44 @@ int eddington(const std::vector<int>& record) {
     return max;
 }
 
+int eddington1(const std::vector<int>& record_o) {
+    // Obviously wouldn't actually copy, just to make testing easier.
+    std::vector<int> record = record_o;
+    std::sort(record.begin(), record.end(), std::greater_equal<int>());
+    int i = 1;
+    for (int entry : record) {
+        if (entry < i) {
+            break;
+        }
+        ++i;
+    }
+    return i - 1;
+}
+
+int eddington2(const std::vector<int>& record) {
+    int ed = 0;
+    int above = 0;
+    std::vector<int> H(record.size());
+    for (int entry : record) {
+        if (entry > ed) {
+            above += 1;
+            if (entry < record.size()) {
+                H[entry] += 1;
+            }
+            if (above > ed) {
+                ed += 1;
+                above -= H[ed];
+            }
+        }
+    }
+    
+    return ed;
+}
+
 int main(int argc, const char * argv[]) {
     std::cout << getDistance(0,6) << " " << getDistance(1, 5) << " " << getDistance(0, 4) << " " << getDistance(6, 7) << std::endl;
-    std::cout << eddington({3,1,2}) << " " << eddington({99, 100, 101}) << " " << eddington({1, 1, 2, 1, 1}) << " " << eddington({});
+    std::cout << eddington({3,1,2}) << " " << eddington({99, 100, 101}) << " " << eddington({1, 1, 2, 1, 1}) << " " << eddington({}) << std::endl;
+    std::cout << eddington1({3,1,2}) << " " << eddington1({99, 100, 101}) << " " << eddington1({1, 1, 2, 1, 1}) << " " << eddington1({}) << std::endl;
+    std::cout << eddington2({3,1,2}) << " " << eddington2({99, 100, 101}) << " " << eddington2({1, 1, 2, 1, 1}) << " " << eddington2({}) << std::endl;
     return 0;
 }
