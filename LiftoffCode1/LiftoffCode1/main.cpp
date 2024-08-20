@@ -86,7 +86,7 @@ int eddington(const std::vector<int>& record) {
     }
     
     int max = -1;
-    int remaining = record.size();
+    int remaining = static_cast<int>(record.size());
     for (const std::pair<int, int> frequency_entry : frequency) {
         if (remaining >= frequency_entry.first) {
             max = frequency_entry.first;
@@ -96,7 +96,7 @@ int eddington(const std::vector<int>& record) {
         }
     }
     if (max == -1) {
-        return record.size();
+        return static_cast<int>(record.size());
     }
     return max;
 }
